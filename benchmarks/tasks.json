@@ -1,0 +1,17 @@
+[
+  {
+    "name": "checkout-validation",
+    "task": "Change checkout validation, keep the HTML form contract and order persistence consistent, and add a guard",
+    "expected": ["backend/api.go", "web/index.html", "db/schema.sql", "tests/guards.go"]
+  },
+  {
+    "name": "design-token",
+    "task": "Change checkout spacing design tokens without fragmenting component CSS or breaking the checkout form",
+    "expected": ["web/styles.css", "web/index.html", "tests/guards.go"]
+  },
+  {
+    "name": "deployment",
+    "task": "Make release deployment restart-safe and ensure shell failures stop the deployment",
+    "expected": ["scripts/deploy.sh", "scripts/env.sh", "tests/guards.go"]
+  }
+]

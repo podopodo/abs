@@ -1,0 +1,8 @@
+package tests
+
+// @ACP G ORDER.CREATE
+// @ACP G UI.CHECKOUT.FORM
+// @ACP G UI.CHECKOUT.STYLE
+// @ACP G DEPLOY.RELEASE
+// @ACP G ORDER.SCHEMA
+func GuardMappings() {}

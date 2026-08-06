@@ -1,0 +1,6 @@
+-- @ACP O ORDER.SCHEMA
+CREATE TABLE orders (
+  id BIGINT PRIMARY KEY,
+  customer_id TEXT NOT NULL,
+  total INTEGER NOT NULL
+);

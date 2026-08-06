@@ -1,0 +1,8 @@
+{
+  "exclude": [".git", ".hg", ".svn", "node_modules", "vendor", "dist", "build", "target", ".next", ".nuxt", ".cache", ".pytest_cache", "__pycache__", ".idea", ".vscode"],
+  "max_file_bytes": 2097152,
+  "max_scope_files": 18,
+  "context_file": "CONTEXT.md",
+  "state_file": ".agent/STATE.md",
+  "strict_contexts": false
+}

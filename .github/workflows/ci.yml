@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Go ${{ matrix.go }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        go: ['1.23.x', 'stable']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ matrix.go }}
+          cache: true
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+      - name: Verify go.mod is tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+      - name: Vet
+        run: go vet ./...
+      - name: Test with race detector
+        run: go test -race ./...
+      - name: Build CLI
+        run: go build -trimpath -o bin/acp ./cmd/acp
+      - name: Dogfood ACP
+        run: ./bin/acp check
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache: true
+      - name: Run retrieval benchmark
+        run: go run ./cmd/acpbench --root examples/mixed-stack --tasks benchmarks/tasks.json --out benchmarks/latest.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: retrieval-benchmark
+          path: benchmarks/latest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  cross-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache: true
+      - name: Build release archives
+        run: go run ./cmd/releasepack --version ci --out dist
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cross-platform-archives
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7

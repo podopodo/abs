@@ -1,0 +1,9 @@
+{
+  "notice": "Controlled protocol-design experiments. Token values are text-size estimates, not API telemetry.",
+  "experiments": [
+    {"name":"clean-v9-rental","control_working_tokens":27497,"acp_working_tokens":29241,"acp_version":"v9","result":"same correctness; ACP +6.3%"},
+    {"name":"large-clean-v20-field-service","control_working_tokens":35255,"acp_working_tokens":30231,"acp_version":"v20","control_hidden_risks":12,"acp_hidden_risks":28,"risk_total":32},
+    {"name":"v30-cumulative-domains","control_working_tokens":54923,"acp_working_tokens":48271,"acp_version":"v30","control_hidden_risks":12,"acp_hidden_risks":48,"risk_total":48},
+    {"name":"v30-final-holdout","control_working_tokens":4941,"acp_working_tokens":5888,"acp_version":"v30","result":"both correct; control cheaper on single task"}
+  ]
+}

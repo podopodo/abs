@@ -1,0 +1,113 @@
+{
+  "root": "examples/mixed-stack",
+  "tasks": 3,
+  "results": [
+    {
+      "name": "checkout-validation",
+      "engine": "acp",
+      "selected": 6,
+      "bytes": 1307,
+      "expected": 4,
+      "found": 4,
+      "recall": 1,
+      "micros": 208,
+      "paths": [
+        "web/index.html",
+        "tests/guards.go",
+        "backend/api.go",
+        "web/checkout.js",
+        "web/styles.css",
+        "db/schema.sql"
+      ]
+    },
+    {
+      "name": "checkout-validation",
+      "engine": "lexical",
+      "selected": 10,
+      "bytes": 2072,
+      "expected": 4,
+      "found": 4,
+      "recall": 1,
+      "micros": 36,
+      "paths": [
+        "web/index.html",
+        "CONTEXT.md",
+        "web/CONTEXT.md",
+        "web/checkout.js",
+        "backend/CONTEXT.md",
+        "db/CONTEXT.md",
+        "tests/guards.go",
+        "backend/api.go",
+        "db/schema.sql",
+        "web/styles.css"
+      ]
+    },
+    {
+      "name": "design-token",
+      "engine": "acp",
+      "selected": 4,
+      "bytes": 765,
+      "expected": 3,
+      "found": 3,
+      "recall": 1,
+      "micros": 165,
+      "paths": [
+        "web/index.html",
+        "web/styles.css",
+        "tests/guards.go",
+        "web/checkout.js"
+      ]
+    },
+    {
+      "name": "design-token",
+      "engine": "lexical",
+      "selected": 8,
+      "bytes": 1530,
+      "expected": 3,
+      "found": 3,
+      "recall": 1,
+      "micros": 34,
+      "paths": [
+        "web/CONTEXT.md",
+        "web/checkout.js",
+        "web/index.html",
+        "web/styles.css",
+        "tests/guards.go",
+        "CONTEXT.md",
+        "backend/CONTEXT.md",
+        "db/CONTEXT.md"
+      ]
+    },
+    {
+      "name": "deployment",
+      "engine": "acp",
+      "selected": 3,
+      "bytes": 388,
+      "expected": 3,
+      "found": 3,
+      "recall": 1,
+      "micros": 200,
+      "paths": [
+        "scripts/deploy.sh",
+        "tests/guards.go",
+        "scripts/env.sh"
+      ]
+    },
+    {
+      "name": "deployment",
+      "engine": "lexical",
+      "selected": 4,
+      "bytes": 742,
+      "expected": 3,
+      "found": 2,
+      "recall": 0.6666666666666666,
+      "micros": 31,
+      "paths": [
+        "scripts/CONTEXT.md",
+        "scripts/deploy.sh",
+        "CONTEXT.md",
+        "tests/guards.go"
+      ]
+    }
+  ]
+}
