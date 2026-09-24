@@ -39,12 +39,18 @@ type report struct {
 	Results []row  `json:"results"`
 }
 
+// tags: benchmark
 func main() {
 	root := flag.String("root", "examples/mixed-stack", "project root")
 	tasksPath := flag.String("tasks", "benchmarks/tasks.json", "tasks JSON")
 	max := flag.Int("max-files", 18, "file cap")
 	out := flag.String("out", "", "optional JSON output path")
+	compressMode := flag.Bool("compress", false, "run the compression benchmark instead of retrieval")
 	flag.Parse()
+	if *compressMode {
+		runCompressBench(*out)
+		return
+	}
 	b, err := os.ReadFile(*tasksPath)
 	fatalIf(err)
 	var tasks []task

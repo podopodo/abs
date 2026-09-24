@@ -23,6 +23,24 @@ F web/checkout.js # dependency of web/index.html; dependent UI.CHECKOUT.FORM; pa
 
 Four files and two context files instead of "read the repo".
 
+Since v1.1, ACP also shrinks what goes *into* the context window. `acp pack` inlines those files as task-aware outlines under a token budget, and `acp run` compresses noisy command output while keeping every error, so nothing important is lost:
+
+```bash
+acp run -- go test ./...
+```
+
+```text
+=== RUN   TestCase000
+… 445 lines elided (L2-446) [2 shapes; top 223× "--- PASS …"]
+=== RUN   TestRefundIdempotent
+    refund_test.go:57: second refund created a new ledger row
+--- FAIL: TestRefundIdempotent (0.01s)
+… 354 lines elided (L450-803) [2 shapes; top 177× "--- PASS …"]
+FAIL
+FAIL	shop/payments	1.912s
+[acp] log 5241->80 est-tokens (-98%) exit=1; expand: acp expand da405bdb1356 --lines A:B
+```
+
 ## Why this exists
 
 Long, multi-session work rarely fails because someone cannot write syntax. It fails because continuity is lost:
@@ -104,7 +122,8 @@ acp init
 Creates:
 
 ```text
-PROTOCOL.md      the embedded ACP V30 protocol — this is what an agent reads first
+PROTOCOL.md      the embedded ACP V30 protocol — rules plus when, how and why to use
+                 each acp command; this is what an agent reads first
 CONTEXT.md       root architectural context (edit this by hand)
 .agent/STATE.md  unfinished-handoff state; empty means done
 .acp.json        excludes, size caps, scope cap (all optional)
@@ -156,7 +175,31 @@ Untagged projects still work — ACP falls back to symbols, paths, dependencies 
 
 Put steps 1–2 in your agent's system prompt or `CLAUDE.md`/`AGENTS.md` and the rest follows from `PROTOCOL.md`.
 
-### 4. Keep it honest in CI
+### 4. Spend less context
+
+Scope says *which* files; compression decides *how much of each* the model has to read. The idea follows [Headroom](https://github.com/headroomlabs-ai/headroom) — compress tool output, logs, JSON and code before the model sees it, keep the signal, keep originals locally so any cut is reversible — implemented as deterministic, standard-library Go with no model, proxy or network.
+
+```bash
+acp pack "Change checkout validation"      # scope + inlined evidence, 8000-token budget by default
+acp pack --budget 3000 "…"                  # tighter budget: outlines shrink, low-rank files become SKIP lines
+acp run -- npm test                         # run, compress output, keep the exit code
+kubectl get pods -o json | acp compress     # stdin works too
+acp compress --query "refund" app.log       # prefer lines that mention the task
+acp expand da405bdb --lines 446:449         # get back exactly what was elided
+acp savings                                 # estimated tokens saved so far
+```
+
+| Content | What survives |
+|---|---|
+| JSON | constant fields hoisted into `common`; value counts and numeric ranges in `summary`; first/last, error, outlier, per-category and task-matching rows with their original index |
+| Logs, test output | head, tail, every error or warning with its stack, first occurrences of each line shape; pass noise collapses |
+| Code | package, imports, types, signatures, doc comments, `@ACP` tags; long bodies become `… N lines elided (L35-246)` |
+| Diffs | headers and changed lines with one line of context |
+| Text | blank runs and repeats collapse; long text keeps head, tail, headings and signal lines |
+
+Every marker cites original line numbers. Originals live in `.acp/cache/`, which ignores itself in Git and is never scanned. Measured on the bundled corpora: 79–99% fewer estimated tokens with every required fact kept — see [Benchmarks](#benchmarks) for what that does and does not prove.
+
+### 5. Keep it honest in CI
 
 ```bash
 acp check --changed     # fast, PR-sized: file checks on changed files, ownership checks still global
@@ -181,6 +224,11 @@ acp graph ID                               owner, dependents, guards for an ID
 acp entries ID                             public entries reaching an ID
 acp guards ID                              guards mapped to an ID
 acp ids                                    all known IDs
+acp pack [--budget N] [--json] "task"      scope + compressed evidence under a token budget
+acp compress [--kind K] [--budget N] [FILE] compress files or stdin; original cached
+acp run [--budget N] -- CMD [ARGS]         run a command, compress its output, keep exit code
+acp expand ID [--lines A:B]                recover a cached original or line range
+acp savings [--json] [--reset]             estimated tokens saved; clear the cache
 acp protocol                               print the embedded protocol
 acp version
 ```
@@ -235,6 +283,24 @@ Totals: **13 files / 2,460 bytes / 100% recall** for ACP against **22 files / 4,
 
 Caveat that matters: this is a small fixture repo and a deterministic *retrieval* benchmark. It says nothing about LLM output quality. Absolute times are sub-millisecond and not a meaningful axis of comparison.
 
+### Compression (reproducible, in this repo)
+
+`acpbench --compress` runs deterministic corpora plus two real source files, and checks that named facts (the error, the panic site, the failed row, the outlier, the function signatures) are still present after compression.
+
+```bash
+make benchmark-compress
+```
+
+| Corpus | Kind | Est. tokens before | After | Saved | Facts kept |
+|---|---|---:|---:|---:|---:|
+| 3,000-line service log | log | 77,295 | 564 | 99.3% | 4/4 |
+| 500-row API response | json | 19,123 | 170 | 99.1% | 4/4 |
+| 401 tests, one failure | log | 5,241 | 80 | 98.5% | 3/3 |
+| `internal/scope/scope.go` | code | 2,185 | 459 | 79.0% | 3/3 |
+| `internal/check/check.go` | code | 2,261 | 379 | 83.2% | 3/3 |
+
+Caveats: tokens are bytes/4 estimates; synthetic logs are repetitive by construction; "facts kept" is string presence, not a model-quality evaluation; code outlines drop bodies on purpose, so a task that needs one pays for a second read.
+
 ### Protocol experiments (historical, weaker evidence)
 
 The protocol was iterated to V30 with controlled A/B repositories. Kept as design evidence, not as a performance promise:
@@ -257,6 +323,7 @@ ACP is deterministic project intelligence — not a compiler, not a language ser
 - `@ACP G` proves a guard mapping exists; it cannot prove the assertion is strong.
 - `--strict` HTML/CSS and duplicate-body checks produce advisory false positives by design.
 - Context savings only materialize if the agent actually reads *only* the scope capsule.
+- Compression is heuristic. Outlines for languages other than Go are structural guesses; unusual brace or indentation styles can keep too much or elide a body that mattered. Every elision is recoverable with `acp expand` or by reading the cited line range.
 - Windows binaries are cross-compiled and smoke-tested, but the test suite runs only on Linux and macOS — see [Platform coverage](#platform-coverage).
 
 ## Development
@@ -296,8 +363,8 @@ What is missing is coverage, not correctness by design: no test run has ever exe
 ### Releasing
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
 The release workflow tests, cross-compiles six binaries, builds archives, writes `checksums.txt`, attests provenance and publishes the GitHub Release. See [docs/RELEASES.md](docs/RELEASES.md).

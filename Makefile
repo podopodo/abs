@@ -1,4 +1,4 @@
-.PHONY: fmt vet test race build check benchmark release clean
+.PHONY: fmt vet test race build check benchmark benchmark-compress release clean
 
 fmt:
 	gofmt -w .
@@ -21,6 +21,9 @@ check:
 
 benchmark:
 	go run ./cmd/acpbench --root examples/mixed-stack --tasks benchmarks/tasks.json --out benchmarks/latest.json
+
+benchmark-compress:
+	go run ./cmd/acpbench --compress --out benchmarks/compress.json
 
 release:
 	go run ./cmd/releasepack --version "$${VERSION:-dev}" --out dist

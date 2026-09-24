@@ -16,8 +16,10 @@ type Config struct {
 	ContextFile    string   `json:"context_file"`
 	StateFile      string   `json:"state_file"`
 	StrictContexts bool     `json:"strict_contexts"`
+	PackBudget     int      `json:"pack_budget"`
 }
 
+// tags: config
 func Default() Config {
 	return Config{
 		Exclude:        []string{".git", ".hg", ".svn", "node_modules", "vendor", "dist", "build", "target", ".next", ".nuxt", ".cache", ".pytest_cache", "__pycache__", ".idea", ".vscode"},
@@ -26,9 +28,11 @@ func Default() Config {
 		ContextFile:    "CONTEXT.md",
 		StateFile:      filepath.FromSlash(".agent/STATE.md"),
 		StrictContexts: false,
+		PackBudget:     8000,
 	}
 }
 
+// tags: config
 func Load(root string) (Config, error) {
 	cfg := Default()
 	p := filepath.Join(root, ".acp.json")
@@ -47,6 +51,9 @@ func Load(root string) (Config, error) {
 	}
 	if cfg.MaxScopeFiles <= 0 {
 		cfg.MaxScopeFiles = Default().MaxScopeFiles
+	}
+	if cfg.PackBudget <= 0 {
+		cfg.PackBudget = Default().PackBudget
 	}
 	if cfg.ContextFile == "" {
 		cfg.ContextFile = Default().ContextFile

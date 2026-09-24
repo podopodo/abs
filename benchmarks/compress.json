@@ -1,0 +1,55 @@
+{
+  "note": "tokens are estimates (bytes/4); retention = required facts still present",
+  "results": [
+    {
+      "name": "service-log",
+      "kind": "log",
+      "original_tokens": 77295,
+      "compressed_tokens": 564,
+      "saved_pct": 99.3,
+      "retained": 4,
+      "required": 4,
+      "micros": 138085
+    },
+    {
+      "name": "api-json",
+      "kind": "json",
+      "original_tokens": 19123,
+      "compressed_tokens": 170,
+      "saved_pct": 99.1,
+      "retained": 4,
+      "required": 4,
+      "micros": 2351
+    },
+    {
+      "name": "go-test-output",
+      "kind": "log",
+      "original_tokens": 5241,
+      "compressed_tokens": 80,
+      "saved_pct": 98.5,
+      "retained": 3,
+      "required": 3,
+      "micros": 3128
+    },
+    {
+      "name": "internal/scope/scope.go",
+      "kind": "code",
+      "original_tokens": 2185,
+      "compressed_tokens": 459,
+      "saved_pct": 79,
+      "retained": 3,
+      "required": 3,
+      "micros": 422
+    },
+    {
+      "name": "internal/check/check.go",
+      "kind": "code",
+      "original_tokens": 2261,
+      "compressed_tokens": 379,
+      "saved_pct": 83.2,
+      "retained": 3,
+      "required": 3,
+      "micros": 253
+    }
+  ]
+}

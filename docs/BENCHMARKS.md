@@ -11,6 +11,30 @@ go run ./cmd/acpbench \
 
 It compares ACP scope with a plain lexical top-N control using expected-impact recall, selected files, selected bytes and runtime.
 
+## Compression benchmark
+
+```bash
+make benchmark-compress
+# go run ./cmd/acpbench --compress --out benchmarks/compress.json
+```
+
+It compresses deterministic synthetic corpora (a 3,000-line service log with one error and one panic, a 500-row API response with a failed row and an outlier, 400 passing tests with one failure) plus two real source files from this repository. Each corpus lists facts that must survive; the benchmark reports estimated tokens before and after, and how many of those facts are still in the output.
+
+| Corpus | Kind | Before | After | Saved | Facts kept |
+|---|---|---:|---:|---:|---:|
+| service-log | log | 77,295 | 564 | 99.3% | 4/4 |
+| api-json | json | 19,123 | 170 | 99.1% | 4/4 |
+| go-test-output | log | 5,241 | 80 | 98.5% | 3/3 |
+| internal/scope/scope.go | code | 2,185 | 459 | 79.0% | 3/3 |
+| internal/check/check.go | code | 2,261 | 379 | 83.2% | 3/3 |
+
+Limitations:
+
+- Tokens are bytes/4 estimates, not provider tokenizer counts.
+- Synthetic logs and JSON are highly repetitive by construction; real output is often less compressible.
+- "Facts kept" checks for specific strings. It does not prove a model answers equally well; the fact list is small and chosen by the author.
+- Code outlines deliberately remove bodies. A task that needs a body must expand it, which costs a second read.
+
 ## Historical protocol experiments
 
 The protocol was iterated through V30 using controlled A/B repositories and hidden checks. These figures are retained as design evidence, not universal performance guarantees.

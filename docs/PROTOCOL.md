@@ -2,6 +2,10 @@
 
 The shipped `PROTOCOL.md` is intentionally compact and embedded in the binary. Run `acp protocol` to print the exact bundled version.
 
+## Command guide
+
+The protocol ends with a short "Commands: when -> how -> why" section. Each line names the situation, the exact command, and the reason — for example, run tests through `acp run -- <cmd>` so failures and stacks survive while repeated pass lines collapse. It also says when *not* to compress: short output, exact bytes, or a body being edited. `acp init` writes it into `PROTOCOL.md`, so every agent that reads the protocol learns the tools with it.
+
 ## Core invariants
 
 ```text

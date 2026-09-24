@@ -16,6 +16,7 @@ import (
 	"github.com/podopodo/abs/internal/textutil"
 )
 
+// tags: scan
 func Scan(root string, cfg config.Config) (*model.Project, error) {
 	abs, err := filepath.Abs(root)
 	if err != nil {
@@ -39,7 +40,8 @@ func Scan(root string, cfg config.Config) (*model.Project, error) {
 		}
 		rel = filepath.ToSlash(rel)
 		if d.IsDir() {
-			if excluded[d.Name()] {
+			// .acp holds compression caches; it is never project source.
+			if excluded[d.Name()] || rel == ".acp" {
 				return filepath.SkipDir
 			}
 			return nil

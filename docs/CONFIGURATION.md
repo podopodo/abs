@@ -9,7 +9,8 @@ ACP reads optional project configuration from `.acp.json`.
   "max_scope_files": 18,
   "context_file": "CONTEXT.md",
   "state_file": ".agent/STATE.md",
-  "strict_contexts": false
+  "strict_contexts": false,
+  "pack_budget": 8000
 }
 ```
 
@@ -20,6 +21,7 @@ ACP reads optional project configuration from `.acp.json`.
 - `max_scope_files`: default task capsule cap. Complex tasks may expand to the built-in safety cap.
 - `context_file`: inherited local-context filename.
 - `state_file`: unfinished handoff-state path.
+- `pack_budget`: default estimated-token budget for `acp pack` (bytes/4 estimate). Override per call with `--budget`.
 - `strict_contexts`: reserved for enforcing broader context-presence policies in future versions.
 
 The defaults are embedded in the binary and written by `acp init`. ACP remains usable when `.acp.json` is absent.

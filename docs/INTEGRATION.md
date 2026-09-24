@@ -48,3 +48,11 @@ For pull requests, `acp check --changed` is fast, but a full `acp check` should 
 ## 7. Agent instructions
 
 Tell agents to read `PROTOCOL.md`, run `acp scope`, read only listed evidence, and finish with tests plus `acp check --changed`.
+
+To also save context on reading and on command output:
+
+- `acp pack "<task>"` replaces "scope, then read every file" with one budgeted capsule.
+- `acp run -- <cmd>` wraps test runners, builds and API calls; failures and stacks survive, noise collapses.
+- `acp expand ID --lines A:B` recovers an elided range only when it matters.
+
+`.acp/` is created on first compression and ignores itself in Git.

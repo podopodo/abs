@@ -4,5 +4,6 @@
   "max_scope_files": 18,
   "context_file": "CONTEXT.md",
   "state_file": ".agent/STATE.md",
-  "strict_contexts": false
+  "strict_contexts": false,
+  "pack_budget": 8000
 }
