@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.3.0 — 2026-10-10
 
 - The embedded `PROTOCOL.md` (written by `acp init`, printed by `acp protocol`) gains a four-line `Behavior` section: think first, build least, touch least, prove. It is capped at 600 bytes by a test and defers to the ACP rules above it on conflict.
 - Supersedes the v1.2.0 decision to keep this guidance out of the protocol. A project's own `AGENTS.md` or `CLAUDE.md` can conflict with or overwrite repo-level guidance, so it now travels with the protocol instead. The protocol stays `ACP v30`.
