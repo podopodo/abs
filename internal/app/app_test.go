@@ -39,6 +39,34 @@ func TestInitAndProtocol(t *testing.T) {
 	}
 }
 
+// tags: protocol_behavior
+func TestInitProtocolHasCondensedBehavior(t *testing.T) {
+	root := t.TempDir()
+	var out, errb bytes.Buffer
+	if code := Run([]string{"--root", root, "init"}, &out, &errb); code != 0 {
+		t.Fatalf("code=%d err=%s", code, errb.String())
+	}
+	raw, err := os.ReadFile(filepath.Join(root, "PROTOCOL.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	proto := string(raw)
+	i := strings.Index(proto, "## Behavior")
+	if i < 0 {
+		t.Fatal("initialized PROTOCOL.md missing Behavior section")
+	}
+	section := proto[i:]
+	for _, want := range []string{"ACP rules above win on conflict", "Think first", "Build least", "Touch least", "Prove"} {
+		if !strings.Contains(section, want) {
+			t.Errorf("Behavior section missing %q", want)
+		}
+	}
+	// Condensed on purpose: the protocol loads on every task, so the section must not grow back.
+	if len(section) > 600 {
+		t.Errorf("Behavior section is %d bytes, cap is 600", len(section))
+	}
+}
+
 func TestCompressExpandRunAndSavings(t *testing.T) {
 	root := t.TempDir()
 	var lines bytes.Buffer

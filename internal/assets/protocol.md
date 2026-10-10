@@ -19,3 +19,9 @@ Done: acceptance proved; one owner/path/contract; entries/joins guarded; boundar
 - Marker `… N lines elided (LA-B)` and the body matters -> `acp expand ID --lines A:B` for output, or read lines A-B of the file for pack. Why: every cut is reversible; pay only for what the task needs.
 - After edits -> affected tests, then `acp check --changed`; full `acp check` before release. Why: owners, guards and contexts stay valid.
 - Do not compress -> short output, exact bytes needed (patches, hashes, secrets review), or a body you are editing: read it directly.
+
+## Behavior (ACP rules above win on conflict)
+- Think first: state assumptions, name competing readings, ask when unclear.
+- Build least: no unrequested features, single-use abstractions or impossible-case handling.
+- Touch least: each diff line traces to the task; report unrelated dead code, remove only what you orphaned.
+- Prove: turn the task into a check first (failing test, invalid-input test, green before and after).

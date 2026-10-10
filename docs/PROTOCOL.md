@@ -6,6 +6,10 @@ The shipped `PROTOCOL.md` is intentionally compact and embedded in the binary. R
 
 The protocol ends with a short "Commands: when -> how -> why" section. Each line names the situation, the exact command, and the reason — for example, run tests through `acp run -- <cmd>` so failures and stacks survive while repeated pass lines collapse. It also says when *not* to compress: short output, exact bytes, or a body being edited. `acp init` writes it into `PROTOCOL.md`, so every agent that reads the protocol learns the tools with it.
 
+## Behavior
+
+The protocol ends with a four-line `Behavior` section: think first, build least, touch least, prove. It is deliberately condensed (a test caps it at 600 bytes) because the protocol is read on every task, and it defers to the ACP rules above it on conflict. It lives in the protocol rather than a project's `AGENTS.md` or `CLAUDE.md` because those files belong to each project and may already say something different; `acp init` writes the protocol, so the guidance travels with it.
+
 ## Core invariants
 
 ```text
