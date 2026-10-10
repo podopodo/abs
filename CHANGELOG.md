@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.2.0 — 2026-10-10
+
+Agent behavior guidance, shipped as repository documentation. No change to the binary, the embedded protocol or any command output.
+
+- `AGENTS.md` added to the repository: four condensed rules for agents working on ACP (think first, build least, touch least, prove) plus a pointer to `PROTOCOL.md`. Where they conflict, ACP's own rules in `PROTOCOL.md` win.
+- Deliberately kept out of the embedded `PROTOCOL.md`: that file is read on every task, so adding to it would grow per-task context and could outwrite ACP's own methods. `acp init` and `acp protocol` output are unchanged.
+- Opt-in per project. Shipping it from `acp init` (create-only, never overwriting an existing `AGENTS.md`) or making it a required `acp check` rule is undecided and not part of this release.
+- Claude Code reads `CLAUDE.md`, not `AGENTS.md`; a `CLAUDE.md` containing `@AGENTS.md` loads it there.
+
 ## v1.1.0 — 2026-09-24
 
 Context compression, following the concept of [Headroom](https://github.com/headroomlabs-ai/headroom), built as deterministic standard-library Go.
